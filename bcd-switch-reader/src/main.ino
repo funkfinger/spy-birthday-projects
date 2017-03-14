@@ -1,6 +1,7 @@
 #define set(x) |= (1<<x)
 #define clr(x) &=~(1<<x) 
 #define inv(x) ^=(1<<x)
+#define chkBit(x) & (1<<(x))
 
 #define digit1 ((PINB ^ 0b11111111) & 0x0F) // lower nibble of port b inversed
 #define digit2 ((PINB ^ 0b11111111) >> 4)   // upper nibble of port b inversed
@@ -9,6 +10,7 @@
 #define digit5 ((PIND ^ 0b11111111) >> 4)   // upper nibble of port d inversed
 
 #define LED PC5
+#define BUTTON PC4
 
 void setup() {
   DDRB = 0b00000000; // port b as input...
@@ -26,10 +28,16 @@ void setup() {
   PORTC set(PC2);
   PORTC set(PC3);
   
+  
   DDRD = 0b00000000; // port d as input...
   PORTD = 0b11111111; // turn on port d pull-ups...
   
   pinMode(LED, OUTPUT); // set pc5 to output...
+
+  // button to input and pull-up
+  DDRC clr(DDC4);
+  PORTC set(BUTTON);
+
 }
 
 uint8_t unlock = 0;
@@ -43,7 +51,8 @@ void loop() {
       (digit4 == 3) &&
       (digit3 == 1) &&
       (digit2 == 1) &&
-      (digit1 == 5)
+      (digit1 == 5) &&
+      !(PINC chkBit(4))
   ) {
     unlock = 1;
   }
